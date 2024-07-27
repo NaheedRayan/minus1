@@ -1,0 +1,3 @@
+----------------------------------------------
+Cmd 0 --▶ echo "config.json" >> .gitignore
+Cmd 0 --▶ echo "config.json" >> .gitignore
