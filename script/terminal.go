@@ -10,8 +10,8 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"time"
 )
-
 
 func RunCommand(cmds string , logger *log.Logger ) (string, error) {
 
@@ -36,7 +36,9 @@ func RunCommand(cmds string , logger *log.Logger ) (string, error) {
 	cmdArgs := args[1:]
 
 
-	ctx, cancel := context.WithCancel(context.Background())
+	// ctx, cancel := context.WithCancel(context.Background())
+	// 2 min context
+	ctx , cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
 	switch cmd {

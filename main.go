@@ -43,6 +43,7 @@ func main() {
 	//////////////////////////////////////////config file setup ///////////////////////////////////////////////////
 
 	configFile, err := os.Open("config.json")
+	// configFile, err := os.Open("/usr/local/minus1/config.json")
 	if err != nil {
 			fmt.Println("Error opening config file:", err)
 			return
@@ -61,6 +62,7 @@ func main() {
 	///////////////////////////////////////////////// setting up log files/////////////////////////////////////////
 
 	file, err := os.OpenFile("cmdList.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	// file, err := os.OpenFile("/usr/local/minus1/cmdList.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,6 +77,7 @@ func main() {
 
 	// logger for cmds
 	file_2, err := os.OpenFile("cmdLog.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	// file_2, err := os.OpenFile("/usr/local/minus1/cmdLog.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,11 +113,12 @@ func main() {
 
 	1. **General Question Answering (Task 1)**: Minus1 provides answers to general questions based on the information available. When handling Task 1, Minus1 does not require command execution, and the "taskOutput" will contain the answer. The "taskStatus" should be set to "Completed" once the answer is provided.
 
-	2. **Command Execution (Task 2)**: Minus1 can execute commands in the Linux terminal, such as navigating the file system, creating files or directories, searching for files, and more. For Task 2:
-	   - Minus1 receives a list of commands (cmdList) in the format "cmd cmdArgs".
+	2. **Command Execution (Task 2)**: Minus1 can execute commands in the Linux terminal Operating System, such as navigating the file system, creating files or directories, searching for files, and more. For Task 2:
+	   - Minus1 receives a list of commands (cmdList) in the format "cmd cmdArgs" or it could also use piping.
 	   - Minus1 can use commands like "ls", "pwd", "cd" , "~" , "mkdir", "find", etc., to interact with the file system.
-	   - The "taskStatus" should initially be set to "Running" during command execution and updated to "Completed" or "Failed" based on the outcome.
-	   - The "retryCnt" field keeps track of the number of retries if command execution fails. Minus1 may adjust the "cmdList" and attempt re-execution if necessary.
+	   - It should avoid interactive cmds such as "sudo" , "nano" etc.
+	   - For scheduling it should use cron and make necessary scripts if required.
+	   - The "taskStatus" should initially be set to "Running" during command execution and updated to "Completed" or "Failed" based on the outcome of log file. 
 
 
 
@@ -143,12 +147,8 @@ func main() {
 		},
 		"description": "List of commands to be executed, applicable only for task 2"
 	  },
-	  "retryCnt": {
-		"type": "integer",
-		"description": "Count of the number of retries if the cmdList fails and needs to be updated"
-	  }
 	},
-	"required": ["task", "taskStatus", "taskOutput", "cmdList" , "retryCnt" ]
+	"required": ["task", "taskStatus", "taskOutput", "cmdList" ]
 		}
 
 
@@ -162,6 +162,8 @@ func main() {
 		ResponseMIMEType: "application/json",
 	}
 
+
+	// safety commands : dissabling all
 	model.SafetySettings = []*genai.SafetySetting{
 		{
 		  Category:  genai.HarmCategoryHarassment,
@@ -245,7 +247,7 @@ var pinkColor = lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Render
 
 // extra view for help and functunality decrpition
 func (e model) helpView() string {
-	return helpStyle("\n  ↑/↓: Navigate • esc: Quit\n")
+	return helpStyle("\n  ↑/↓: Navigate • esc: Quit")
 }
 
 
@@ -260,24 +262,25 @@ func initialModel() model {
 	// ta.CharLimit = 900
 
 	ta.SetWidth(80)
-	ta.SetHeight(3)
+	ta.SetHeight(4)
 
 	// Remove cursor line styling
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
 
 	ta.ShowLineNumbers = false
 	ta.KeyMap.InsertNewline.SetEnabled(false)
+	// ta.FocusedStyle.Base.BorderStyle(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("62"))
 
 
 
-	vp := viewport.New(80, 10)
+	vp := viewport.New(80, 12)
 	vp.Style = lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("62")).
 		PaddingRight(2)
 
 
-	vp.SetContent(cyanColor("Minus1 Terminal"))
+	vp.SetContent(cyanColor("Minus1 Terminal\nline2\nline3\nline4\nline5"))
 	
 
 
@@ -357,9 +360,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		m.viewport.Width = msg.Width-2
-		// m.viewport.Height = msg.Height-7
+		m.viewport.Height = msg.Height-13
 
-		m.textarea.MaxWidth = msg.Width-2
+		// m.textarea.MaxWidth = msg.Width-2
 		// m.textarea.MaxWidth = msg.Width-2
 	case aiMsg:
 		// Handle the AI response
@@ -457,6 +460,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// again ask ai for validity
 			m.workingMsg = "Commands Execution finished"
+			// m.messages = append(m.messages,cyanColor()
 			m.messages = append(m.messages,cyanColor("✅ Execution complete"))
 			m.messages = append(m.messages,cyanColor("👀 Awaiting verification"))
 			m.messages = append(m.messages,cyanColor("⏳ Please wait\n"))
@@ -468,8 +472,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			g_file_2.Truncate(0)
 			return m , askAI(fmt.Sprintf("Though everything ran,check the log below for confirmation if the taskStatus completed or still needs update.\n%v",string(content)))
 
+		}else if msg.response == "signal: killed"{
 
+			// again ask ai for validity
+			m.workingMsg = "⏰ Commands timed out after exceeding 2 minutes"
+			// m.messages = append(m.messages,cyanColor()
+			m.messages = append(m.messages,cyanColor("✅ TimeOut while executing command"))
+			m.viewport.SetContent(strings.Join(m.messages, "\n"))
+			m.viewport.GotoBottom()
 
+			m.workingMsg = "Analyzing...⏳"
+			m.workingView = false
+
+			g_file_2.Truncate(0)
+			return m , nil;
 
 		}else{// if not ok
 			m.workingMsg = "🛠️🔍 Entering Error Correction Mode"
@@ -502,20 +518,20 @@ func (m model) View() string {
 
 	if m.workingView{
 		return fmt.Sprintf(
-			"%s%s\n%s --▶ %s \n\n%s\n",
+			"%s%s\n\n%s --▶ %s\n\n%s\n",
 			m.viewport.View(),
 			m.helpView(),
 			m.spinner.View(),
 			m.workingMsg,
 			m.textarea.View(),
-		) + "\n\n"
+		) + ""
 	}else{
 		return fmt.Sprintf(
 			"%s%s\n\n%s\n",
 			m.viewport.View(),
 			m.helpView(),
 			m.textarea.View(),
-		) + "\n\n"
+		) + ""
 	}
 }
 
@@ -553,6 +569,14 @@ func cmdExecutor(cmdList []string) tea.Cmd{
 			g_logger_2.Printf("CMD %v: %s\n", i , cmd)
 			s , err := script.RunCommand(cmd , g_logger_2)
 			if err != nil {
+
+				if err.Error() == "signal: killed"{
+					// for timeout
+					g_logger_2.Printf("LOG : %v",err.Error())
+					g_logger_2.Printf("LOG : TimeOut while executing command")
+					g_logger_2.Println("--------LOG file END---------")
+					return cmdExecutorMsg{response: "signal: killed"}
+				}
 				g_logger_2.Printf("LOG : %v",err.Error())
 				g_logger_2.Printf("ERR : error running cmd %v\n",i)
 				g_logger_2.Println("--------LOG file END---------")
