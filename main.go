@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/NaheedRayan/minus1/script"
@@ -42,8 +43,27 @@ func main() {
 
 	//////////////////////////////////////////config file setup ///////////////////////////////////////////////////
 
-	configFile, err := os.Open("config.json")
-	// configFile, err := os.Open("/usr/local/minus1/config.json")
+
+	// Get the path of the executable
+    exePath, err := os.Executable()
+    if err != nil {
+        log.Fatalf("Failed to get executable path: %v", err)
+    }
+
+    // Get the directory of the executable
+    exeDir := filepath.Dir(exePath)
+
+
+	///////////////////////////////////////////////////////
+
+	// fmt.Println(configPath)
+	configFile, err := os.Open(filepath.Join(exeDir, "config.json"))
+
+	// setting the working dir
+	homeDir , _ := os.Getwd()
+	os.Chdir(homeDir)
+
+	// configFile, err := os.Open("config.json")
 	if err != nil {
 			fmt.Println("Error opening config file:", err)
 			return
@@ -61,8 +81,8 @@ func main() {
 
 	///////////////////////////////////////////////// setting up log files/////////////////////////////////////////
 
-	file, err := os.OpenFile("cmdList.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	// file, err := os.OpenFile("/usr/local/minus1/cmdList.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	// file, err := os.OpenFile("cmdList.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(filepath.Join(exeDir, "cmdList.txt"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,8 +96,8 @@ func main() {
 
 
 	// logger for cmds
-	file_2, err := os.OpenFile("cmdLog.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	// file_2, err := os.OpenFile("/usr/local/minus1/cmdLog.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	// file_2, err := os.OpenFile("cmdLog.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file_2, err := os.OpenFile(filepath.Join(exeDir, "cmdLog.txt"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -280,7 +300,7 @@ func initialModel() model {
 		PaddingRight(2)
 
 
-	vp.SetContent(cyanColor("Minus1 Terminal\nline2\nline3\nline4\nline5"))
+	vp.SetContent(cyanColor("Hi 👋"))
 	
 
 
@@ -345,8 +365,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			g_logger.Println("----------------------------------------------")
 
 
+			homeDir , _ := os.Getwd()
+
 			// Return a command to process AI interaction 
-			return m, askAI(m.userInput)
+			return m, askAI("Working DIR:"+homeDir+"\n"+ m.userInput)
 
 		case tea.KeyBackspace:
 			if len(m.userInput) > 0 {
