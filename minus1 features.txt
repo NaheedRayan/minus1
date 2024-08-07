@@ -1,0 +1,54 @@
+
+
+### 1. **NLP Capabilities: General Queries**
+**Prompt:**  
+"Hey, whats the difference between cappuccino vs coffee"
+
+**Agent Response:**  
+"Cappuccino and coffee are both beverages made from coffee beans, but they have key differences. **Cappuccino** is a coffee drink made with espresso, steamed milk, and a thin layer of foamed milk. It typically has a smoother and milder flavor than coffee. **Coffee**, on the other hand, can be brewed using various methods, such as drip, French press, or espresso, and can be served with or without milk. Coffee tends to have a stronger and more bitter taste compared to cappuccino.   "
+
+### 2. **File Management**
+**Prompt:**  
+"Create a new folder called 'ProjectX' and inside it, create a file named 'README.md'."
+
+
+### 3. **System Management**
+**Prompt:**  
+"Check the disk space of my primary drive"
+
+
+**Prompt:**
+"Check the network status and list all connected devices."
+
+
+**Prompt:**
+"which version of nodejs is installed on my system"
+
+
+
+### 4. **Automation and Scripting**
+**Prompt:**  
+"copy test1.txt from desktop to test2.txt to desktop every 2 min using cron "
+
+
+### 5. **Integration with External Tools and APIs**(Email kori nai. possible na ekhon)
+**Prompt:**  
+"Send an email to John with the subject 'Meeting Update' and body 'The meeting has been rescheduled to Friday at 2 PM.'"
+
+**Agent Response:**  
+"Sending email to John... Email sent successfully with the subject 'Meeting Update'."
+
+### 6. **Security Features**
+**Prompt:**  
+"Show me a list of commands that require admin permissions."
+
+
+
+### 7. **Customization and Personalization**
+**Prompt:**  
+"Change your prompt style to a more casual tone."
+
+**Agent Response:**  
+"Alright! I've switched to a more casual tone. How can I help you today?"
+
+
