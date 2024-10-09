@@ -1,14 +1,16 @@
 # MinusOne
 ## Gemini-driven AI for a smarter, simpler Linux terminal.
-## Please Add a vote here [Click here..](https://ai.google.dev/competition/projects/minusone)
+
+# App description
+Introducing MinusOne, an innovative AI agent that leverages large language models like Gemini to revolutionize your Linux terminal experience. MinusOne seamlessly translates your natural language prompts into precise commands, executing tasks flawlessly and simplifying complex operations. Even if something goes wrong, MinusOne can correct itself, ensuring that your operations run smoothly. Whether you're a seasoned developer or new to Linux, MinusOne is designed to enhance productivity and minimize errors.
+
+### Please Add a vote here [Click here..](https://ai.google.dev/competition/projects/minusone)
 
 <hr>
 
 ## Click here to watch the video in Youtube
 [![Watch the video](https://img.youtube.com/vi/mE6375XeC5s/maxresdefault.jpg)](https://www.youtube.com/watch?v=mE6375XeC5s)
 
-# App description
-Introducing MinusOne, an innovative AI agent that leverages large language models like Gemini to revolutionize your Linux terminal experience. MinusOne seamlessly translates your natural language prompts into precise commands, executing tasks flawlessly and simplifying complex operations. Even if something goes wrong, MinusOne can correct itself, ensuring that your operations run smoothly. Whether you're a seasoned developer or new to Linux, MinusOne is designed to enhance productivity and minimize errors.
 
 
 # Installation Steps
